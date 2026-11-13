@@ -3,10 +3,10 @@ package frc.robot.subsystems;
 import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import edu.wpi.first.wpilibj.SerialPort;
-import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import org.wpilib.hardware.bus.SerialPort;
+import org.wpilib.system.Timer;
+import org.wpilib.command2.Command;
+import org.wpilib.command2.SubsystemBase;
 
 public class USBSerialSubsystem extends SubsystemBase {
 	private SerialPort usbSerial;
@@ -25,8 +25,8 @@ public class USBSerialSubsystem extends SubsystemBase {
 		}
 
 		try {
-			// Initialize USB port (usually kUSB)
-			usbSerial = new SerialPort(9600, SerialPort.Port.kUSB);
+			// Initialize USB port (usually USB)
+			usbSerial = new SerialPort(9600, SerialPort.Port.USB);
 		} catch (Exception e) {
 			System.out.println("USB Serial Port Init Failed: " + e.getMessage());
 		}

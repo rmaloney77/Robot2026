@@ -1,8 +1,8 @@
 package frc.robot.commands;
 
-import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import org.wpilib.system.Timer;
+import org.wpilib.command2.Command;
+import org.wpilib.command2.SequentialCommandGroup;
 import frc.robot.ClampedP;
 import frc.robot.ClampedP.ClampedPConstants;
 import frc.robot.subsystems.AngularPositionSubsystem;

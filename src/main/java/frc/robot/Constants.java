@@ -2,26 +2,39 @@ package frc.robot;
 
 import java.util.Set;
 
+import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.util.Units;
+import org.wpilib.hardware.bus.CANPort;
+import org.wpilib.math.geometry.Pose2d;
+import org.wpilib.math.geometry.Rotation2d;
+import org.wpilib.math.geometry.Translation2d;
+import org.wpilib.math.util.Units;
 
 public class Constants {
 	public static final boolean kCompBot = true;
 	public static final boolean kLogging = true;
+
+	public static final class CANConstants {
+		// TODO: confirm bus assignments against the final SystemCore wiring
+		/** CAN port for the swerve drive (TalonFX / CANcoder). */
+		public static final CANPort kDrivePort = CANPort.CAN_S0;
+		/** CAN port for mechanisms (SPARKs, PDH, shooter). */
+		public static final CANPort kMechanismPort = CANPort.CAN_S0;
+		/** Phoenix 6 CANBus objects for the ports above. */
+		public static final CANBus kDriveBus = new CANBus(kDrivePort);
+		public static final CANBus kMechanismBus = new CANBus(kMechanismPort);
+	}
 
 	public static final class Subsystems {
 		public static final class VisionConstants {
 
 			// 3 red, 3 blue
 			public static final Set<Integer> kTrackableTags = Set.of(10, 2, 11, 9, 8, 5, 18, 21, 24, 25, 26, 27);
-			public static final Pose2d kBlueHub = new Pose2d(4.63, 4.04, Rotation2d.kZero);
-			public static final Pose2d kRedHub = new Pose2d(11.92, 4.04, Rotation2d.kZero);
+			public static final Pose2d kBlueHub = new Pose2d(4.63, 4.04, Rotation2d.ZERO);
+			public static final Pose2d kRedHub = new Pose2d(11.92, 4.04, Rotation2d.ZERO);
 
 			public static final double kRedNeutralZoneStart = 11.1;
 			public static final double kBlueNeutralZoneStart = 5.2;
