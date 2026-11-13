@@ -1,0 +1,24 @@
+name: Build
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build-java:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # WPILib 2027 uses Java 25 (matches sourceCompatibility in build.gradle)
+      - uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '25'
+
+      # Caches Gradle, GradleRIO and vendordep downloads between runs
+      - uses: gradle/actions/setup-gradle@v4
+
+      - name: Build robot code
+        run: chmod +x gradlew && ./gradlew build
