@@ -21,4 +21,17 @@ jobs:
       - uses: gradle/actions/setup-gradle@v4
 
       - name: Build robot code
-        run: chmod +x gradlew && ./gradlew build
+        run: chmod +x gradlew && ./gradlew assemble
+
+      # Unit tests in src/test/java (JUnit 5)
+      - name: Run unit tests
+        run: ./gradlew test
+
+      # Browsable test report; download it from the run's Summary page
+      - name: Upload test report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-report
+          path: build/reports/tests/test/
+          if-no-files-found: ignore
