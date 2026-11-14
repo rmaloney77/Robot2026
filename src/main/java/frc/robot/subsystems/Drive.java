@@ -38,10 +38,10 @@ import org.wpilib.framework.TimedRobot;
 import org.wpilib.system.Timer;
 import org.wpilib.telemetry.Telemetry;
 import org.wpilib.simulation.OnboardIMUSim;
-import org.wpilib.command2.Command;
-import org.wpilib.command2.CommandScheduler;
-import org.wpilib.command2.SubsystemBase;
-import org.wpilib.command2.sysid.SysIdRoutine;
+import frc.robot.commands.compat.Command;
+import frc.robot.commands.compat.CommandScheduler;
+import frc.robot.commands.compat.SubsystemBase;
+import org.wpilib.command3.sysid.SysIdRoutine;
 import org.wpilib.util.Pair;
 import frc.robot.Aim;
 import frc.robot.Constants;
@@ -95,8 +95,9 @@ public class Drive extends SubsystemBase {
 		// Adjust ramp rate, step voltage, and timeout to make sure robot doesn't
 		// collide with anything
 		m_sysidRoutine = new SysIdRoutine(
-				new SysIdRoutine.Config(Units.Volts.of(2.5).div(Units.Seconds.of(1)), null, Units.Seconds.of(3)),
-				new SysIdRoutine.Mechanism(volt -> doModuleX(
+				new SysIdRoutine.Config(Units.Volts.of(2.5).div(Units.Seconds.of(1)), SysIdRoutine.Config.DEFAULT_STEP_VOLTAGE,
+						Units.Seconds.of(3), null),
+				new SysIdRoutine.SysIdMechanism(volt -> doModuleX(
 						module -> module
 								.setModuleState(new SwerveModuleVelocity(volt.magnitude(), new Rotation2d(Math.PI / 2))),
 						SwerveModuleVelocity[]::new), null, this));
@@ -346,7 +347,7 @@ public class Drive extends SubsystemBase {
 	 * @param direction The direction to run the test in.
 	 * @return The command.
 	 */
-	public static Command sysidQuasistatic(SysIdRoutine.Direction direction) {
+	public static org.wpilib.command3.Command sysidQuasistatic(SysIdRoutine.Direction direction) {
 		return s_theDrive.m_sysidRoutine.quasistatic(direction);
 	}
 
@@ -356,7 +357,7 @@ public class Drive extends SubsystemBase {
 	 * @param direction The direction to run the test in.
 	 * @return The command.
 	 */
-	public static Command sysidDynamic(SysIdRoutine.Direction direction) {
+	public static org.wpilib.command3.Command sysidDynamic(SysIdRoutine.Direction direction) {
 		return s_theDrive.m_sysidRoutine.dynamic(direction);
 	}
 }

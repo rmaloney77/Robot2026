@@ -10,7 +10,7 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import org.wpilib.telemetry.Telemetry;
-import org.wpilib.command2.SubsystemBase;
+import frc.robot.commands.compat.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Constants.Subsystems.ShooterConstants;
 

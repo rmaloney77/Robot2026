@@ -28,7 +28,7 @@ import org.wpilib.hardware.power.PowerDistribution;
 import org.wpilib.hardware.power.PowerDistribution.ModuleType;
 import org.wpilib.system.Timer;
 import org.wpilib.telemetry.Telemetry;
-import org.wpilib.command2.SubsystemBase;
+import frc.robot.commands.compat.SubsystemBase;
 import frc.robot.Aim;
 import frc.robot.Constants.Subsystems.VisionConstants;
 import frc.robot.PoseUtils;

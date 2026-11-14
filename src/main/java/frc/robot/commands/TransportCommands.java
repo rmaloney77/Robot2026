@@ -1,7 +1,7 @@
 package frc.robot.commands;
 
 import org.wpilib.system.Timer;
-import org.wpilib.command2.Command;
+import frc.robot.commands.compat.Command;
 import frc.robot.Constants.Subsystems.AgitatorConstants;
 import frc.robot.subsystems.Agitator;
 import frc.robot.subsystems.Shooter;

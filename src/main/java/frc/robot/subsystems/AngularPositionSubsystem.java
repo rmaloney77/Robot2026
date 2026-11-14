@@ -15,7 +15,7 @@ import com.revrobotics.spark.config.SparkMaxConfig;
 
 import org.wpilib.telemetry.Telemetry;
 import org.wpilib.telemetry.TelemetryTable;
-import org.wpilib.command2.SubsystemBase;
+import frc.robot.commands.compat.SubsystemBase;
 import frc.robot.AngleUtility;
 import frc.robot.Constants;
 

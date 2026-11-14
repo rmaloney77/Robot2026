@@ -5,8 +5,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.wpilib.hardware.bus.SerialPort;
 import org.wpilib.system.Timer;
-import org.wpilib.command2.Command;
-import org.wpilib.command2.SubsystemBase;
+import frc.robot.commands.compat.Command;
+import frc.robot.commands.compat.SubsystemBase;
 
 public class USBSerialSubsystem extends SubsystemBase {
 	private SerialPort usbSerial;

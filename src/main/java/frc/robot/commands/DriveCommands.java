@@ -12,7 +12,7 @@ import org.wpilib.math.geometry.Pose2d;
 import org.wpilib.math.geometry.Rotation2d;
 import org.wpilib.system.Timer;
 import org.wpilib.telemetry.Telemetry;
-import org.wpilib.command2.Command;
+import frc.robot.commands.compat.Command;
 import frc.robot.AngleUtility;
 import frc.robot.ClampedP;
 import frc.robot.subsystems.Drive;

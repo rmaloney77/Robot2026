@@ -4,18 +4,20 @@
 
 package frc.robot;
 
+import static org.wpilib.units.Units.Seconds;
+
 import org.wpilib.math.geometry.Pose2d;
 import org.wpilib.math.geometry.Rotation2d;
 import org.wpilib.framework.TimedRobot;
 import org.wpilib.tunable.Selectable;
 import org.wpilib.tunable.Tunables;
 import org.wpilib.telemetry.Telemetry;
-import org.wpilib.command2.Command;
-import org.wpilib.command2.CommandScheduler;
-import org.wpilib.command2.Commands;
-import org.wpilib.command2.RepeatCommand;
-import org.wpilib.command2.WaitCommand;
-import org.wpilib.command2.button.CommandGamepad;
+import frc.robot.commands.compat.Command;
+import frc.robot.commands.compat.CommandScheduler;
+import frc.robot.commands.compat.Commands;
+import frc.robot.commands.compat.RepeatCommand;
+import frc.robot.commands.compat.WaitCommand;
+import org.wpilib.command3.button.CommandGamepad;
 import org.wpilib.driverstation.Gamepad;
 import frc.robot.Constants.Subsystems.AgitatorConstants;
 import frc.robot.Constants.Subsystems.IntakeConstants;
@@ -172,7 +174,7 @@ public class Robot extends TimedRobot {
 							() -> -m_driverController.getLeftY(), () -> -m_driverController.getLeftX(),
 							() -> m_driverController.getLeftTrigger() - m_driverController.getRightTrigger(),
 							() -> false)); // TODO: fix robot/field-centric toggle
-			m_driverController.start().debounce(0.1).onTrue(new DriveCommands.ResetHeading());
+			m_driverController.start().debounce(Seconds.of(0.1)).onTrue(new DriveCommands.ResetHeading());
 		}
 
 		{ // Hood bindings
@@ -187,9 +189,9 @@ public class Robot extends TimedRobot {
 		}
 
 		{ // Intake bindings
-			m_driverController.rightBumper().debounce(0.1).onTrue( // Deploys arm & spins wheels
+			m_driverController.rightBumper().debounce(Seconds.of(0.1)).onTrue( // Deploys arm & spins wheels
 					IntakeCommands.getArmOutCombinedCommand());
-			m_driverController.leftBumper().debounce(0.1).onTrue( // Retracts arm & stops wheels
+			m_driverController.leftBumper().debounce(Seconds.of(0.1)).onTrue( // Retracts arm & stops wheels
 					IntakeCommands.getArmInCombinedCommand());
 
 			// Manually drive intake up & down
@@ -198,9 +200,9 @@ public class Robot extends TimedRobot {
 		}
 
 		{ // Climber bindings
-			// m_driverController.back().debounce(.1).onTrue(ClimberCommands.getResetCommand());
-			// m_driverController.dpadUp().debounce(.1).onTrue(ClimberCommands.getClimbCommand());
-			// m_driverController.dpadDown().debounce(.1).onTrue(ClimberCommands.getRetractCommand());
+			// m_driverController.back().debounce(Seconds.of(.1)).onTrue(ClimberCommands.getResetCommand());
+			// m_driverController.dpadUp().debounce(Seconds.of(.1)).onTrue(ClimberCommands.getClimbCommand());
+			// m_driverController.dpadDown().debounce(Seconds.of(.1)).onTrue(ClimberCommands.getRetractCommand());
 
 			m_driverController.dpadUp().whileTrue(ClimberCommands.getRunAtPowerCommand(.75));
 			m_driverController.dpadDown().whileTrue(ClimberCommands.getRunAtPowerCommand(-.75));
@@ -218,8 +220,8 @@ public class Robot extends TimedRobot {
 		}
 
 		{ // Intake bindings
-			m_operatorController.start().debounce(0.1).onTrue(IntakeCommands.getEncoderResetCommand());
-			m_operatorController.leftBumper().debounce(.1).onTrue(new IntakeCommands.StopIntakeWheels());
+			m_operatorController.start().debounce(Seconds.of(0.1)).onTrue(IntakeCommands.getEncoderResetCommand());
+			m_operatorController.leftBumper().debounce(Seconds.of(.1)).onTrue(new IntakeCommands.StopIntakeWheels());
 			// IntakeWheels.getIntakeWheels().setDefaultCommand(
 			// new IntakeCommands.Teletake(IntakeConstants.kWheelPower,
 			// m_operatorController.leftBumper()));
@@ -259,15 +261,15 @@ public class Robot extends TimedRobot {
 			boolean absolute = true;
 
 			// Presets
-			m_operatorController.faceUp().debounce(.1).onTrue(new AimCommands.AdjustAim(absolute, 4.5, this));
-			m_operatorController.faceRight().debounce(.1).onTrue(new AimCommands.AdjustAim(absolute, 11.7, this));
-			m_operatorController.faceDown().debounce(.1).onTrue(new AimCommands.AdjustAim(absolute, 18, this));
+			m_operatorController.faceUp().debounce(Seconds.of(.1)).onTrue(new AimCommands.AdjustAim(absolute, 4.5, this));
+			m_operatorController.faceRight().debounce(Seconds.of(.1)).onTrue(new AimCommands.AdjustAim(absolute, 11.7, this));
+			m_operatorController.faceDown().debounce(Seconds.of(.1)).onTrue(new AimCommands.AdjustAim(absolute, 18, this));
 
 			// Auto aim
 
-			m_operatorController.axisLessThan(Gamepad.Axis.LEFT_TRIGGER, 0.025)
+			m_operatorController.getHID().axisLessThan(Gamepad.Axis.LEFT_TRIGGER.value, 0.025)
 					.and(
-							m_operatorController.axisLessThan(Gamepad.Axis.RIGHT_TRIGGER, 0.025)
+							m_operatorController.getHID().axisLessThan(Gamepad.Axis.RIGHT_TRIGGER.value, 0.025)
 									.and(m_operatorController.back()))
 					.whileTrue(
 							new RepeatCommand(
@@ -364,12 +366,12 @@ public class Robot extends TimedRobot {
 						-.3, /* POWER */
 						0)); /* TIME */
 
-		m_operatorController.faceUp().debounce(0.1).onTrue(
+		m_operatorController.faceUp().debounce(Seconds.of(0.1)).onTrue(
 				new ShooterCommands.RunAtDPadRPM(this, m_operatorController.dpadRight(),
 						m_operatorController.dpadLeft()));
 
 		/*
-		 * m_operatorController.faceUp().debounce(0.1).toggleOnTrue(
+		 * m_operatorController.faceUp().debounce(Seconds.of(0.1)).toggleOnTrue(
 		 * new ShooterCommands.RunAtDynamicRPM(1000));
 		 */
 
@@ -385,13 +387,13 @@ public class Robot extends TimedRobot {
 		{ // climber test bindings
 			m_driverController.faceUp().whileTrue(ClimberCommands.getRunAtPowerCommand(.6));
 			m_driverController.faceRight().whileTrue(ClimberCommands.getRunAtPowerCommand(-0.6));
-			m_driverController.start().debounce(.1).onTrue(ClimberCommands.getResetCommand());
+			m_driverController.start().debounce(Seconds.of(.1)).onTrue(ClimberCommands.getResetCommand());
 		}
 
 		{ // intake test bindings
 			m_operatorController.faceRight().whileTrue(IntakeCommands.getRunArmAtPowerCommand(-0.2));
 			m_operatorController.faceDown().whileTrue(IntakeCommands.getRunArmAtPowerCommand(0.2));
-			m_operatorController.faceLeft().debounce(0.1).toggleOnTrue(
+			m_operatorController.faceLeft().debounce(Seconds.of(0.1)).toggleOnTrue(
 					new IntakeCommands.Spintake(
 							IntakeConstants.kWheelPower)); /* POWER */
 		}

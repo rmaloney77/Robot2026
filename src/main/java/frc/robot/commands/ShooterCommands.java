@@ -6,8 +6,8 @@ package frc.robot.commands;
 
 import org.wpilib.framework.IterativeRobotBase;
 import org.wpilib.system.Timer;
-import org.wpilib.command2.Command;
-import org.wpilib.command2.button.Trigger;
+import frc.robot.commands.compat.Command;
+import org.wpilib.command3.Trigger;
 import frc.robot.Constants.Subsystems.ShooterConstants;
 import frc.robot.subsystems.Shooter;
 

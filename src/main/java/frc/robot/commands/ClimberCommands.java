@@ -1,6 +1,6 @@
 package frc.robot.commands;
 
-import org.wpilib.command2.Command;
+import frc.robot.commands.compat.Command;
 import frc.robot.Constants.Subsystems.ClimberConstants;
 import frc.robot.subsystems.Climber;
 
