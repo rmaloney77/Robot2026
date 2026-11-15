@@ -79,7 +79,30 @@ public class Robot extends TimedRobot {
 		IntakeWheels.stopWheel();
 		Agitator.stop();
 		Shooter.stop();
+	}
+
+	// Whether the gyro heading has been set to "facing the driver" since robot code started
+	private boolean m_headingSet = false;
+
+	/**
+	 * Declares the robot to be facing the driver (Drive.resetHeading(): 180 degrees). Called when
+	 * auto starts, because the robot is placed facing the driver before a match.
+	 */
+	private void resetHeading() {
 		Drive.resetHeading();
+		m_headingSet = true;
+	}
+
+	/**
+	 * Sets the heading at the start of teleop only if nothing has set it yet (teleop with no auto
+	 * since robot code started, as in practice). In a match, auto has already set it, and the robot
+	 * may have turned during auto: resetting it again would make field-relative driving off by that
+	 * turn for all of teleop. Drivers can still reset the heading by hand (start button).
+	 */
+	private void resetHeadingIfNotSet() {
+		if (!m_headingSet) {
+			resetHeading();
+		}
 	}
 
 	public Robot() {
@@ -411,6 +434,7 @@ public class Robot extends TimedRobot {
 	@Override
 	public void autonomousInit() {
 		initSubsystems();
+		resetHeading();
 		m_scheduler.cancelAll();
 		Command kommander = m_autoChooser.getSelected();
 		System.out.println(kommander.getName());
@@ -420,6 +444,7 @@ public class Robot extends TimedRobot {
 	@Override
 	public void teleopInit() {
 		initSubsystems();
+		resetHeadingIfNotSet();
 		m_scheduler.cancelAll();
 		if (compControls) {
 			bindCompControls();
@@ -455,6 +480,7 @@ public class Robot extends TimedRobot {
 	@Override
 	public void utilityInit() {
 		initSubsystems();
+		resetHeading(); // as before
 		m_scheduler.cancelAll();
 		m_scheduler.schedule(Commands.sequence(ClampedP.testCommand()));
 	}

@@ -16,7 +16,7 @@ import frc.robot.subsystems.Turret;
 import frc.robot.subsystems.Vision.AngleDistanceEstimator;
 
 public class AimCommands {
-	private static double s_airtime = 1.2; // Set default airtime to 1.2
+	private static double s_airtime = 1.2; // [tuned] seconds; default airtime until a distance is known
 
 	// Return updated airtime based on changing distance
 	public static double getAirtime() {

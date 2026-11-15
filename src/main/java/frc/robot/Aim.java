@@ -15,7 +15,12 @@ public class Aim {
 	 * their preset {@code ShooterPreset}. Tree map automatically takes care of
 	 * sorting these by their keys (distances) and when the angles or speeds are
 	 * streamed, they come out in order
-	 * 
+	 *
+	 * <p>[tuned] from test shots (see Constants for the tag legend). Each row: distance in feet ->
+	 * hood angle in hood-encoder degrees, flywheel RPM, airtime in seconds. The -500 and 500 rows
+	 * hold the values constant beyond the measured range. Distances are offset by 8.25 inches before
+	 * lookup (see getHoodAngle).
+	 *
 	 * @see java.util.TreeMap
 	 **/
 

@@ -220,8 +220,8 @@ public class DriveCommands {
 		private final double m_distanceY;
 		private final double m_angle;
 		private Pose2d m_targetPose;
-		private static final double m_tolerance = .05; // When to stop trying!!
-		private static final double m_thetaTolerance = 2;
+		private static final double m_tolerance = .05; // [tuned] meters; when to stop trying!!
+		private static final double m_thetaTolerance = 2; // [tuned] degrees
 
 		public VisionDriveDistance(double distanceX, double distanceY, double angle) {
 			m_distanceX = distanceX;

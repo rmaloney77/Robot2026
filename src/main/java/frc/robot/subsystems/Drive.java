@@ -34,7 +34,6 @@ import org.wpilib.driverstation.MatchType;
 import org.wpilib.driverstation.DriverStationErrors;
 import org.wpilib.driverstation.Alliance;
 import org.wpilib.framework.RobotBase;
-import org.wpilib.framework.TimedRobot;
 import org.wpilib.system.Timer;
 import org.wpilib.telemetry.Telemetry;
 import org.wpilib.simulation.OnboardIMUSim;
@@ -67,7 +66,7 @@ public class Drive extends SubsystemBase {
 	private final OnboardIMU m_gyro = new OnboardIMU(MountOrientation.PORTRAIT);
 	// Software heading offset (replaces the navX setAngleAdjustment)
 	private Rotation2d m_headingOffset = Rotation2d.ZERO;
-	// Simulated raw yaw in radians, integrated from chassis omega
+	// Simulated raw yaw in radians, accumulated from the rotation the wheels produce each loop
 	private double m_simYaw = 0;
 	private final SysIdRoutine m_sysidRoutine;
 	private final CircularBuffer<Pair<SwerveModulePosition[], Double>> m_modulePositions = new CircularBuffer<>(2);
@@ -188,7 +187,14 @@ public class Drive extends SubsystemBase {
 	 * @param speeds The chassis speeds.
 	 */
 	private static void setModuleStates(SwerveModuleVelocity[] states) {
-		Telemetry.log("Target Swerve Modules States", states, SwerveModuleVelocity.struct);
+		// The states hold power fractions (-1 to 1), which is what the motors are driven with. Log them
+		// in meters per second so they line up with "Current Swerve Modules States".
+		SwerveModuleVelocity[] targetMetersPerSecond = new SwerveModuleVelocity[states.length];
+		for (int i = 0; i < states.length; i++) {
+			targetMetersPerSecond[i] = new SwerveModuleVelocity(states[i].velocity * kMaxSpeedMetersPerSecond,
+					states[i].angle);
+		}
+		Telemetry.log("Target Swerve Modules States", targetMetersPerSecond, SwerveModuleVelocity.struct);
 		doModuleX(module -> module.setModuleState(states[module.getIndex()]), SwerveModuleVelocity[]::new);
 	}
 
@@ -213,18 +219,13 @@ public class Drive extends SubsystemBase {
 		SwerveModuleVelocity[] states = doModuleX(SwerveModule::getModuleState, SwerveModuleVelocity[]::new);
 		Telemetry.log("Current Swerve Modules States", states, SwerveModuleVelocity.struct);
 
-		// Find and publish chassis speeds (in terms of voltage, 0.0 to 12.0)
+		// Find and publish chassis speeds (meters per second and radians per second)
 		var speeds = m_kinematics.toChassisVelocities(states);
 		Telemetry.log("Chassis Speeds", speeds, ChassisVelocities.struct);
 
-		// Simulate the gyro
-		if (RobotBase.isSimulation())// TODO: Use SysId to get feedforward model for rotation
-			OnboardIMUSim.setYaw(m_simYaw += speeds.omega * TimedRobot.DEFAULT_PERIOD);
-
-		// Update current module positions & odometry pose
-		// m_moduleStates stores last (current) and second to last module positions
+		// Update current module positions
+		// m_modulePositions stores last (current) and second to last module positions
 		m_modulePositions.addFirst(new Pair<SwerveModulePosition[], Double>(getModulePositions(), timestamp));
-		Telemetry.log("Pose", m_odometry.update(getHeading(), m_modulePositions.getFirst().getFirst()), Pose2d.struct);
 
 		// Calculate difference between last and second to last module states
 		// Find x and y velocity by taking the derivative / calculating slope
@@ -233,6 +234,17 @@ public class Drive extends SubsystemBase {
 				.toTwist2d(m_modulePositions.getLast().getFirst(), m_modulePositions.getFirst().getFirst());
 		double dt = m_modulePositions.getFirst().getSecond() - m_modulePositions.getLast().getSecond();
 		m_velocity = new Translation2d(twist.dx / dt, twist.dy / dt);
+
+		// Simulate the gyro: turn by however much the wheels actually turned the robot this loop.
+		// (This used to integrate an angular speed computed from drive motor voltages, which made the
+		// simulated robot turn about 3x faster than its wheels could.)
+		if (RobotBase.isSimulation()) {
+			m_simYaw += twist.dtheta;
+			OnboardIMUSim.setYaw(m_simYaw);
+		}
+
+		// Update the odometry pose (after the simulated gyro, so it uses this loop's heading)
+		Telemetry.log("Pose", m_odometry.update(getHeading(), m_modulePositions.getFirst().getFirst()), Pose2d.struct);
 
 		// Filter velocity (use every 6th value to avoid noise)
 		m_filteredVelocity = new Translation2d(m_velocityXFilter.calculate(m_velocity.getX()),

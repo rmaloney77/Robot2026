@@ -154,7 +154,18 @@ public class SwerveModule {
 	 * @return The module state
 	 */
 	public SwerveModuleVelocity getModuleState() {
-		return new SwerveModuleVelocity(getDriveVoltage(), Rotation2d.fromDegrees(getModuleAngle()));
+		// Measured wheel speed in meters per second (this used to report the drive motor voltage, 0-12,
+		// which couldn't be compared with the target states)
+		return new SwerveModuleVelocity(getDriveVelocity(), Rotation2d.fromDegrees(getModuleAngle()));
+	}
+
+	/**
+	 * Returns the drive wheel's speed.
+	 *
+	 * @return The speed in meters per second.
+	 */
+	public double getDriveVelocity() {
+		return m_driveMotor.getVelocity().getValueAsDouble() * kMetersPerMotorRotation;
 	}
 
 	/**
@@ -175,8 +186,7 @@ public class SwerveModule {
 				m_driveMotor.getTorqueCurrent().getValueAsDouble());
 		Telemetry.log(String.format("Swerve Angles (deg)/%d", m_index), getModuleAngle());
 		Telemetry.log(
-				String.format("Swerve Velocities (m\\s)/%d", m_index),
-				m_driveMotor.getVelocity().getValueAsDouble() * DriveConstants.kMetersPerMotorRotation);
+				String.format("Swerve Velocities (m\\s)/%d", m_index), getDriveVelocity());
 		updateSim();
 		return state;
 	}

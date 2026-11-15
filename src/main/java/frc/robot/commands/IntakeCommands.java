@@ -11,10 +11,11 @@ import frc.robot.subsystems.IntakeExtraArm;
 import frc.robot.subsystems.IntakeWheels;
 
 public class IntakeCommands {
-	private final static double outInMinPower = 0.1;
-	private final static double outInMaxPower = 1.0;
-	private final static double outInMaxError = 25;
-	private final static double outInTolerance = 0.125;
+	// Clamped-P gains for moving the intake arm out and in (see Constants for the tag legend)
+	private final static double outInMinPower = 0.1; // [tuned] duty; minimum to overcome friction
+	private final static double outInMaxPower = 1.0; // [tuned] duty; maximum
+	private final static double outInMaxError = 25; // [tuned] arm motor rotations; slows down within this
+	private final static double outInTolerance = 0.125; // [tuned] arm motor rotations; "arrived" band
 
 	public static class Teletake extends Command {
 		private boolean m_on = false;
