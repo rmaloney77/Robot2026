@@ -3,12 +3,13 @@ package frc.robot.subsystems;
 import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import org.wpilib.command3.Mechanism;
 import org.wpilib.hardware.bus.SerialPort;
 import org.wpilib.system.Timer;
+import org.wpilib.telemetry.Telemetry;
 import frc.robot.commands.compat.Command;
-import frc.robot.commands.compat.SubsystemBase;
 
-public class USBSerialSubsystem extends SubsystemBase {
+public class USBSerialSubsystem implements Mechanism {
 	private SerialPort usbSerial;
 	private static USBSerialSubsystem s_SerialSubsystem;
 	public AtomicBoolean m_isHubShift = new AtomicBoolean(false);
@@ -30,12 +31,29 @@ public class USBSerialSubsystem extends SubsystemBase {
 		} catch (Exception e) {
 			System.out.println("USB Serial Port Init Failed: " + e.getMessage());
 		}
+		// Publish starting values so the Lights topics exist (e.g. in AdvantageScope) before anything is sent
+		Telemetry.log("Lights/Sends", 0L);
+		Telemetry.log("Lights/Pattern", "None sent yet");
 	}
+
+	// Bytes sent to the LED controller since robot code started (see sendData)
+	private long m_sendCount = 0;
 
 	public void sendData(byte[] data) {
 		System.out.println("TRY SEND DATA: " + Arrays.toString(data));
 		if (usbSerial != null) {
 			usbSerial.write(data, data.length);
+		}
+		// Show what the lights were told and how often, so it's visible in AdvantageScope (also in
+		// simulation, where there is no LED controller). A steep "Lights/Sends" slope means the same
+		// pattern is being re-sent every loop.
+		m_sendCount += data.length;
+		Telemetry.log("Lights/Sends", m_sendCount);
+		if (data.length > 0) {
+			int pattern = data[0];
+			Telemetry.log("Lights/Pattern", pattern >= 0 && pattern < LightPattern.values().length
+					? LightPattern.values()[pattern].name()
+					: "Unknown (" + pattern + ")");
 		}
 	}
 
